@@ -1,78 +1,22 @@
-# 📊 Kafka Confluent Labs - Administration
+# 📊 Kafka Confluent Labs - Docker Compose
 
-![GitHub repo size](https://img.shields.io/github/repo-size/hisi91/KAFKA-LABS)
-![GitHub stars](https://img.shields.io/github/stars/hisi91/KAFKA-LABS?style=social)
-![GitHub forks](https://img.shields.io/github/forks/hisi91/KAFKA-LABS?style=social)
-![GitHub issues](https://img.shields.io/github/issues/hisi91/KAFKA-LABS)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![Kafka](https://img.shields.io/badge/Apache-Kafka-black)
+![Confluent](https://img.shields.io/badge/Confluent-Platform-blue)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
 ## 🚀 Overview
 
-Ce repository propose une série de **labs pratiques pour maîtriser l’administration de Kafka Confluent**.
+Ce repository propose une plateforme complète **Apache Kafka basée sur Confluent Platform** déployée avec **Docker Compose**.
  
 Il est conçu pour apprendre à installer, configurer, monitorer et administrer un cluster Kafka dans un contexte proche de la production.
 
 👉 Objectif : passer de **0 à Kafka Admin opérationnel**
 
----
 
-## 🧱 Architecture Kafka (Lab)
-
-### 🔷 Diagramme (Mermaid)
-
-```mermaid
-flowchart LR
-    subgraph Zookeeper Cluster
-        Z1[Zookeeper 1]
-        Z2[Zookeeper 2]
-        Z3[Zookeeper 3]
-    end
-
-    subgraph Kafka Cluster
-        B1[Broker 1]
-        B2[Broker 2]
-        B3[Broker 3]
-    end
-
-    subgraph Monitoring
-        P[Prometheus]
-        G[Grafana]
-        A[Alertmanager]
-    end
-
-    Producers --> B1
-    Producers --> B2
-    Producers --> B3
-
-    B1 --> Consumers
-    B2 --> Consumers
-    B3 --> Consumers
-
-    B1 --> Z1
-    B2 --> Z2
-    B3 --> Z3
-
-    B1 --> P
-    B2 --> P
-    B3 --> P
-
-    P --> G
-    P --> A
-```
-
----
-
-### 🖼️ Diagramme (Image fallback)
-
-![Kafka Architecture](https://raw.githubusercontent.com/confluentinc/confluentinc.github.io/master/assets/images/blog/kafka-architecture.png)
-
----
-
-## 🎯 Objectifs
-
-Ces labs ont pour but de te permettre de :
+💡 Objectif : fournir un environnement prêt pour :
 
 - Comprendre l’architecture de Kafka (brokers, partitions, replication…)
 - Installer et configurer un cluster Kafka
@@ -82,6 +26,7 @@ Ces labs ont pour but de te permettre de :
 - Appliquer les bonnes pratiques d’exploitation
 
 ---
+
 
 ## 📦 Contenu
 
@@ -141,67 +86,232 @@ Connaissances utiles :
 
 ---
 
-## 🚀 Quick Start
+## 🧱 Architecture Confluent (Docker Compose)
 
-```bash
-git clone https://github.com/hisi91/KAFKA-LABS.git
-cd KAFKA-LABS
-cat Kafka-labs-admin.md
+### 🔷 Diagramme (Mermaid)
+
+```mermaid
+flowchart LR
+    subgraph Zookeeper Cluster
+        Z1[Zookeeper]
+    end
+
+    subgraph Kafka Cluster
+        B1[Broker 1]
+        B2[Broker 2]
+        B3[Broker 3]
+    end
+
+    subgraph Confluent Services
+        SR[Schema Registry]
+        KC[Kafka Connect]
+        REST[Kafka REST Proxy]
+        C3[Control Center]
+    end
+
+    subgraph Monitoring
+        JMX[JMX Exporter]
+        P[Prometheus]
+        G[Grafana]
+        A[Alertmanager]
+    end
+
+    Producers --> B1
+    Producers --> B2
+    Producers --> B3
+
+    B1 --> Consumers
+    B2 --> Consumers
+    B3 --> Consumers
+
+    B1 --> SR
+    B2 --> SR
+    B3 --> SR
+
+    KC --> B1
+    KC --> B2
+    KC --> B3
+
+    REST --> B1
+
+    B1 --> JMX
+    B2 --> JMX
+    B3 --> JMX
+
+    JMX --> P
+    P --> G
+    P --> A
 ```
 
 ---
 
-## 📊 Monitoring Stack
+### 🖼️ Architecture (Confluent Platform)
 
-| Tool         | Rôle                       |
-| ------------ | -------------------------- |
-| Prometheus   | Collecte des métriques     |
-| Grafana      | Visualisation              |
-| Alertmanager | Alerting                   |
-| JMX Exporter | Exposition métriques Kafka |
+![Kafka Confluent](https://raw.githubusercontent.com/confluentinc/confluentinc.github.io/master/assets/images/blog/kafka-architecture.png)
+
+---
+
+## 📦 Stack déployée
+
+Cette architecture repose sur les images **Confluent Platform** et inclut :
+
+### 🔹 Core Kafka
+
+* Zookeeper
+* Kafka Brokers (multi-nodes)
+
+### 🔹 Confluent Services
+
+* Schema Registry
+* Kafka Connect
+* Kafka REST Proxy
+* Control Center
+
+👉 Ces composants sont fournis nativement dans les images Confluent et configurés via variables d’environnement dans Docker Compose ([Confluent][1])
+
+---
+
+### 🔹 Monitoring Stack
+
+* JMX Exporter
+* Prometheus
+* Grafana
+* Alertmanager
+
+💡 Les métriques Kafka sont exposées via JMX puis collectées par Prometheus ([Confluent][1])
+
+---
+
+## ⚙️ Fonctionnement
+
+Le fichier `docker-compose.yml` permet de :
+
+* Définir tous les services Kafka
+* Configurer les variables d’environnement (listeners, replication…)
+* Exposer les ports
+* Gérer les dépendances entre services
+
+👉 Docker Compose permet de lancer toute la plateforme avec une seule commande et garantit un environnement reproductible ([DataCamp][2])
+
+---
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/hisi91/cp-all-in-one.git
+cd cp-all-in-one/cp-all-in-one-metrics
+
+docker compose up -d
+```
+
+Vérifier les containers :
+
+```bash
+docker compose ps
+```
+
+Arrêter :
+
+```bash
+docker compose down -v
+```
+
+---
+
+## 🌐 Accès aux services
+
+| Service         | URL                                            |
+| --------------- | ---------------------------------------------- |
+| Kafka Broker    | localhost:9092                                 |
+| Schema Registry | [http://localhost:8081](http://localhost:8081) |
+| Kafka Connect   | [http://localhost:8083](http://localhost:8083) |
+| REST Proxy      | [http://localhost:8082](http://localhost:8082) |
+| Control Center  | [http://localhost:9021](http://localhost:9021) |
+| Prometheus      | [http://localhost:9090](http://localhost:9090) |
+| Grafana         | [http://localhost:3000](http://localhost:3000) |
+
+---
+
+## 📊 Monitoring Kafka
+
+### 🔹 Métriques disponibles
+
+* Kafka Broker metrics (JMX)
+* Consumer lag
+* Throughput
+* Partition distribution
+* Request latency
+
+### 🔹 Stack
+
+| Tool         | Rôle                 |
+| ------------ | -------------------- |
+| Prometheus   | Collecte             |
+| Grafana      | Visualisation        |
+| Alertmanager | Alerting             |
+| JMX Exporter | Exposition métriques |
 
 ---
 
 ## 🧪 Cas d’usage
 
-* Haute disponibilité Kafka
-* Réplication des partitions
-* Debugging cluster
-* Monitoring production
-* Optimisation performance
+* Administration Kafka (topics, partitions, replication)
+* Monitoring temps réel
+* Debugging (lag, ISR, leaders)
+* Test de résilience (broker down)
+* Scaling cluster
 
 ---
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues :
-
-* Nouveaux labs
-* Dashboards Grafana
-* Scripts d’automatisation
-* Fix & amélioration
-
-```bash
-# Workflow
-Fork → Branch → Commit → Pull Request
-```
 
 # 📊 Kafka Confluent Labs - Administration
 
 ## coming soon ...
 
+---
+
+## 🛠️ Bonnes pratiques
+
+* Toujours configurer `KAFKA_ADVERTISED_LISTENERS`
+* Utiliser plusieurs brokers pour simuler prod
+* Surveiller les métriques JMX
+* Configurer replication factor > 1
 
 ---
 
-## ⭐ Support
+## 🤝 Contribution
 
-Si ce repo t’aide :
+* Ajout de labs Kafka
+* Dashboards Grafana
+* Scénarios de panne
+* Optimisation docker-compose
 
-👉 Mets une ⭐ sur GitHub
-👉 Partage avec d’autres devs
+---
+
+## 📄 Licence
+
+MIT License
 
 ---
 
 ## 👨‍💻 Auteur
 
-**Yassine SIHI**
+Yassine SIHI
+
+---
+
+## ⭐ Support
+
+Si ce projet t’aide :
+
+* ⭐ Star le repo
+* 🔁 Partage
+* 💬 Contribue
+
+---
+
+Si tu veux, prochaine étape je peux te faire :
+👉 un **docker-compose custom (clean + commenté)**
+👉 ou un **lab complet type certification Confluent Admin** 🚀
+
+[1]: https://www.confluent.io/blog/how-to-use-kafka-docker-composer/?utm_source=chatgpt.com "How to Create docker-compose.yml File With Kafka Docker Composer | Confluent"
+[2]: https://www.datacamp.com/tutorial/kafka-docker-explained?utm_source=chatgpt.com "Kafka Docker Explained: Setup, Best Practices & Tips | DataCamp"
