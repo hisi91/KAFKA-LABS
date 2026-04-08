@@ -32,10 +32,11 @@ passer de **0 à Kafka Admin opérationnel**
 * Linux / MacOS
 * Docker (recommandé)
 * JDK 11+ installé (JDK 17+ recommandé pour Kafka 4.0)
+   ** Kafka 3.9 : Compatible avec Java 11+ (recommandé pour la compatibilité)
+   ** Kafka 4.0 : Nécessite obligatoirement Java 17+
 * Droits administrateur
 
-Kafka 3.9 : Compatible avec Java 11+ (recommandé pour la compatibilité)
-Kafka 4.0 : Nécessite obligatoirement Java 17+
+
 
 Connaissances utiles :
 
