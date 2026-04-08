@@ -1,28 +1,5 @@
 # 📊 Kafka Confluent Labs - Administration
 
-Ce repository contient une série de labs pratiques autour de l’administration de Apache Kafka.  
-Il est conçu pour apprendre à installer, configurer, monitorer et administrer un cluster Kafka dans un contexte proche de la production.
-
-
-## 🧱 Architecture du Lab
-
-Le lab repose généralement sur une architecture de base sur de docker compose:
-
-- 3 brokers Kafka
-- 3 nœuds ZooKeeper
-- 1 node utilitaire (monitoring & outils)
-
-Stack de monitoring :
-
-- Prometheus
-- Grafana
-- Alertmanager
-- JMX Exporter
-
----
-
-# 📊 Kafka Labs - Administration
-
 ![GitHub repo size](https://img.shields.io/github/repo-size/hisi91/KAFKA-LABS)
 ![GitHub stars](https://img.shields.io/github/stars/hisi91/KAFKA-LABS?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/hisi91/KAFKA-LABS?style=social)
@@ -33,7 +10,9 @@ Stack de monitoring :
 
 ## 🚀 Overview
 
-Ce repository propose une série de **labs pratiques pour maîtriser l’administration de Apache Kafka** dans un environnement proche de la production.
+Ce repository propose une série de **labs pratiques pour maîtriser l’administration de Kafka Confluent**.
+ 
+Il est conçu pour apprendre à installer, configurer, monitorer et administrer un cluster Kafka dans un contexte proche de la production.
 
 👉 Objectif : passer de **0 à Kafka Admin opérationnel**
 
