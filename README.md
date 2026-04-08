@@ -1,4 +1,4 @@
-# 📊 Kafka Confluent Labs
+# 📊 Kafka Confluent Labs - administration 
 
 ![Kafka](https://img.shields.io/badge/Apache-Kafka-black)
 ![Confluent](https://img.shields.io/badge/Confluent-Platform-blue)
@@ -268,7 +268,7 @@ docker compose down -v
 
 ---
 
-# 📊 Kafka Confluent Labs - Administration
+# 📊 Kafka Confluent Labs - developer
 
 ## coming soon ...
 
