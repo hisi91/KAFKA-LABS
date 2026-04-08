@@ -272,23 +272,6 @@ docker compose down -v
 
 ## coming soon ...
 
----
-
-## 🛠️ Bonnes pratiques
-
-* Toujours configurer `KAFKA_ADVERTISED_LISTENERS`
-* Utiliser plusieurs brokers pour simuler prod
-* Surveiller les métriques JMX
-* Configurer replication factor > 1
-
----
-
-## 🤝 Contribution
-
-* Ajout de labs Kafka
-* Dashboards Grafana
-* Scénarios de panne
-* Optimisation docker-compose
 
 ---
 
@@ -311,12 +294,3 @@ Si ce projet t’aide :
 * ⭐ Star le repo
 * 🔁 Partage
 * 💬 Contribue
-
----
-
-Si tu veux, prochaine étape je peux te faire :
-👉 un **docker-compose custom (clean + commenté)**
-👉 ou un **lab complet type certification Confluent Admin** 🚀
-
-[1]: https://www.confluent.io/blog/how-to-use-kafka-docker-composer/?utm_source=chatgpt.com "How to Create docker-compose.yml File With Kafka Docker Composer | Confluent"
-[2]: https://www.datacamp.com/tutorial/kafka-docker-explained?utm_source=chatgpt.com "Kafka Docker Explained: Setup, Best Practices & Tips | DataCamp"
