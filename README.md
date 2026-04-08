@@ -13,10 +13,8 @@ Ce repository propose une plateforme complète **Apache Kafka basée sur Conflue
  
 Il est conçu pour apprendre à installer, configurer, monitorer et administrer un cluster Kafka dans un contexte proche de la production.
 
-👉 Objectif : passer de **0 à Kafka Admin opérationnel**
 
-
-💡 Objectif : fournir un environnement prêt pour :
+💡 Objectif : 
 
 - Comprendre l’architecture de Kafka (brokers, partitions, replication…)
 - Installer et configurer un cluster Kafka
@@ -25,8 +23,27 @@ Il est conçu pour apprendre à installer, configurer, monitorer et administrer 
 - Gérer les opérations courantes (rebalance, scaling, troubleshooting)
 - Appliquer les bonnes pratiques d’exploitation
 
+passer de **0 à Kafka Admin opérationnel**
+
 ---
 
+## ⚙️ Prérequis
+
+* Linux / MacOS
+* Docker (recommandé)
+* JDK 11+ installé (JDK 17+ recommandé pour Kafka 4.0)
+* Droits administrateur
+
+Kafka 3.9 : Compatible avec Java 11+ (recommandé pour la compatibilité)
+Kafka 4.0 : Nécessite obligatoirement Java 17+
+
+Connaissances utiles :
+
+* Linux
+* Réseau
+* Concepts Kafka
+
+---
 
 ## 📦 Contenu
 
@@ -69,20 +86,6 @@ Il est conçu pour apprendre à installer, configurer, monitorer et administrer 
 * Simulation de panne
 * Scaling
 * Troubleshooting
-
----
-
-## ⚙️ Prérequis
-
-* Linux / MacOS
-* Java (JDK 8+)
-* Docker (recommandé)
-
-Connaissances utiles :
-
-* Linux
-* Réseau
-* Concepts Kafka
 
 ---
 
