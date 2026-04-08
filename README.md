@@ -36,8 +36,8 @@ passer de **0 à Kafka Admin opérationnel**
 
 Choix de version :
 
-Kafka 3.9 : Compatible avec Java 11+ (recommandé pour la compatibilité)
-Kafka 4.0 : Nécessite obligatoirement Java 17+
+* Kafka 3.9 : Compatible avec Java 11+ (recommandé pour la compatibilité)
+* Kafka 4.0 : Nécessite obligatoirement Java 17+
 
 Connaissances utiles :
 
