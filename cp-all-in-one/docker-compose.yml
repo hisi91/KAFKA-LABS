@@ -190,41 +190,41 @@ services:
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
 
-  # flink-sql-client:
-  #   image: cnfldemos/flink-sql-client-kafka:1.19.1-scala_2.12-java17
-  #   depends_on:
-  #     - flink-jobmanager
-  #   hostname: flink-sql-client
-  #   container_name: flink-sql-client
-  #   environment:
-  #     FLINK_JOBMANAGER_HOST: flink-jobmanager
+  flink-sql-client:
+    image: cnfldemos/flink-sql-client-kafka:1.19.1-scala_2.12-java17
+    depends_on:
+      - flink-jobmanager
+    hostname: flink-sql-client
+    container_name: flink-sql-client
+    environment:
+      FLINK_JOBMANAGER_HOST: flink-jobmanager
 
-  # flink-jobmanager:
-  #   image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
-  #   hostname: flink-jobmanager
-  #   container_name: flink-jobmanager
-  #   ports:
-  #   - 9081:9081
-  #   command: jobmanager
-  #   environment:
-  #   - |
-  #     FLINK_PROPERTIES=
-  #     jobmanager.rpc.address: flink-jobmanager
-  #     rest.bind-port: 9081
+  flink-jobmanager:
+    image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
+    hostname: flink-jobmanager
+    container_name: flink-jobmanager
+    ports:
+    - 9081:9081
+    command: jobmanager
+    environment:
+    - |
+      FLINK_PROPERTIES=
+      jobmanager.rpc.address: flink-jobmanager
+      rest.bind-port: 9081
 
-  # flink-taskmanager:
-  #   image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
-  #   hostname: flink-taskmanager
-  #   container_name: flink-taskmanager
-  #   depends_on:
-  #   - flink-jobmanager
-  #   command: taskmanager
-  #   scale: 1
-  #   environment:
-  #   - |
-  #     FLINK_PROPERTIES=
-  #     jobmanager.rpc.address: flink-jobmanager
-  #     taskmanager.numberOfTaskSlots: 10
+  flink-taskmanager:
+    image: cnfldemos/flink-kafka:1.19.1-scala_2.12-java17
+    hostname: flink-taskmanager
+    container_name: flink-taskmanager
+    depends_on:
+    - flink-jobmanager
+    command: taskmanager
+    scale: 1
+    environment:
+    - |
+      FLINK_PROPERTIES=
+      jobmanager.rpc.address: flink-jobmanager
+      taskmanager.numberOfTaskSlots: 10
   
   grafana:
     image: grafana/grafana:latest
