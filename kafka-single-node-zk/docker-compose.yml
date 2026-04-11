@@ -1,4 +1,11 @@
 ---
+# Quand un conteneur externe essaie de se connecter via --net=host, Kafka lui répond "connecte-toi à localhost:9092", ce qui fonctionne. 
+# Mais quand c'est un conteneur interne (comme zookeeper → kafka), localhost ne pointe pas sur le bon conteneur.
+# les commandes tournent sur le réseau de la machine hôte, donc elles doivent pouvoir joindre localhost:9092 et localhost:2181. 
+# network_mode: host sur zookeeper et kafka partagent directement le réseau de la machine hôte
+# KAFKA_ZOOKEEPER_CONNECT: localhost:2181 — maintenant kafka joindra zookeeper via localhost (même réseau hôte)
+# avec network_mode: host, les ports sont directement exposés, unitile des les garder
+
 services:
   zookeeper:
     container_name: zookeeper
