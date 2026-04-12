@@ -1,40 +1,33 @@
 package org.example;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-
+import org.apache.kafka.clients.producer.*;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
 
-/**
- * Hello world!
- */
-
-
 public class ProducerApp {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         final int NUMBER_OF_RECORD = 1000000;
         final int MIN = 1;
         final int MAX = 500;
         final String topicName = "vehicle-count";
 
-        final Properties configs = new Properties();
-        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, );
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, );
-        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, );
+        Properties configs = new Properties();
+        try (InputStream in = ProducerApp.class.getClassLoader().getResourceAsStream("producer.properties")) {
+            configs.load(in);
+        }
 
-        try (KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>()) {
+        try (KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(configs)) {
             for (int i = 0; i < NUMBER_OF_RECORD; i++) {
                 String key = "sensor-" + i;
-                int value = new Random().nextInt(MAX - MIN) + MIN;;
+                String value = String.valueOf(new Random().nextInt(MAX - MIN) + MIN);
 
-                ProducerRecord<String, String> producerRecord = new ProducerRecord<>();
+                ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, value);
                 System.out.println("Produced message: (" + key + ", " + value + ")");
-                kafkaProducer.send();
+                kafkaProducer.send(producerRecord, ProducerApp::callBack);
                 Thread.sleep(1000);
             }
+            System.out.println("Produced " + NUMBER_OF_RECORD + " messages.");
         }
     }
 
