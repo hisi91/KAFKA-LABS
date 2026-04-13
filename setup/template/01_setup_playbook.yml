@@ -1,0 +1,302 @@
+---
+- name: Setup root - Création user kafka + configuration système (Ubuntu)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    kafka_user: kafka
+    kafka_script_src: "02_kafka_setup_ubuntu.sh"
+    kafka_script_dst: "/home/kafka/02_kafka_setup_ubuntu.sh"
+
+  tasks:
+
+    # ==========================================================
+    # VÉRIFICATION OS
+    # ==========================================================
+    - name: "Vérifier que l'OS est Ubuntu"
+      assert:
+        that:
+          - ansible_distribution == "Ubuntu"
+        fail_msg: "Ce playbook est réservé à Ubuntu. OS détecté : {{ ansible_distribution }}"
+        success_msg: "OS OK : Ubuntu {{ ansible_distribution_version }}"
+
+    # ==========================================================
+    # ÉTAPE 1 : Mise à jour système
+    # ==========================================================
+    - name: "[1] Mise à jour du cache apt"
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: "[1] Mise à jour de tous les paquets"
+      apt:
+        upgrade: full
+
+    # ==========================================================
+    # ÉTAPE 2 : Création de l'utilisateur kafka
+    # ==========================================================
+    - name: "[2] Création de l'utilisateur kafka"
+      user:
+        name: "{{ kafka_user }}"
+        shell: /bin/bash
+        create_home: true
+        state: present
+
+    - name: "[2] Définir le mot de passe de kafka"
+      pause:
+        prompt: "Entrez le mot de passe pour l'utilisateur kafka (la saisie est masquée)"
+        echo: false
+      register: kafka_password
+      no_log: true
+
+    - name: "[2] Appliquer le mot de passe kafka"
+      user:
+        name: "{{ kafka_user }}"
+        password: "{{ kafka_password.user_input | password_hash('sha512') }}"
+      no_log: true
+
+    - name: "[2] Vérification de l'utilisateur kafka"
+      command: id kafka
+      register: id_result
+      changed_when: false
+
+    - name: "[2] Afficher les infos kafka"
+      debug:
+        msg: "{{ id_result.stdout }}"
+
+    # ==========================================================
+    # ÉTAPE 3 : Ajout au groupe sudo
+    # ==========================================================
+    - name: "[3] Ajouter kafka au groupe sudo"
+      user:
+        name: "{{ kafka_user }}"
+        groups: sudo
+        append: true
+
+    # ==========================================================
+    # ÉTAPE 4 : Configuration SSH
+    # ==========================================================
+    - name: "[4] Installer openssh-server si absent"
+      apt:
+        name: openssh-server
+        state: present
+
+    - name: "[4] Démarrer et activer SSH"
+      service:
+        name: ssh
+        state: started
+        enabled: true
+
+    - name: "[4] Sauvegarder sshd_config"
+      copy:
+        src: /etc/ssh/sshd_config
+        dest: /etc/ssh/sshd_config.bak
+        remote_src: true
+        force: false
+
+    # Ubuntu 24.04+ : fichier drop-in dans sshd_config.d/
+    - name: "[4] Créer répertoire sshd_config.d si Ubuntu >= 24.04"
+      file:
+        path: /etc/ssh/sshd_config.d
+        state: directory
+        mode: '0755'
+      when: ansible_distribution_version is version('24.04', '>=')
+
+    - name: "[4] Créer fichier drop-in SSH pour kafka (Ubuntu >= 24.04)"
+      copy:
+        dest: /etc/ssh/sshd_config.d/60-kafka.conf
+        content: |
+          # Connexion SSH par mot de passe pour kafka
+          PasswordAuthentication yes
+
+          Match User kafka
+              PasswordAuthentication yes
+        mode: '0644'
+      when: ansible_distribution_version is version('24.04', '>=')
+      notify: Reload SSH
+
+    - name: "[4] Activer PasswordAuthentication (Ubuntu < 24.04)"
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication.*'
+        line: 'PasswordAuthentication yes'
+        state: present
+      when: ansible_distribution_version is version('24.04', '<')
+      notify: Reload SSH
+
+    - name: "[4] Ajouter bloc Match User kafka (Ubuntu < 24.04)"
+      blockinfile:
+        path: /etc/ssh/sshd_config
+        marker: "# {mark} ANSIBLE MANAGED - kafka SSH"
+        block: |
+          Match User kafka
+              PasswordAuthentication yes
+      when: ansible_distribution_version is version('24.04', '<')
+      notify: Reload SSH
+
+    - name: "[4] Vérifier syntaxe sshd_config"
+      command: sshd -t
+      changed_when: false
+
+  # ==========================================================
+  # HANDLERS
+  # ==========================================================
+  handlers:
+    - name: Reload SSH
+      service:
+        name: ssh
+        state: reloaded
+
+- name: Setup kafka - Installation Docker + outils (Ubuntu)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    kafka_user: kafka
+
+  tasks:
+
+    # ==========================================================
+    # VÉRIFICATION OS
+    # ==========================================================
+    - name: "Vérifier que l'OS est Ubuntu"
+      assert:
+        that:
+          - ansible_distribution == "Ubuntu"
+        fail_msg: "Ce playbook est réservé à Ubuntu. OS détecté : {{ ansible_distribution }}"
+        success_msg: "OS OK : Ubuntu {{ ansible_distribution_version }} ({{ ansible_distribution_release }})"
+
+    # ==========================================================
+    # ÉTAPE 1 : plocate
+    # ==========================================================
+    - name: "[1] Installer plocate"
+      apt:
+        name: plocate
+        state: present
+        update_cache: true
+
+    # ==========================================================
+    # ÉTAPE 2 : Prérequis Docker
+    # ==========================================================
+    - name: "[2] Installer les prérequis Docker"
+      apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+
+    # ==========================================================
+    # ÉTAPE 3 : Clé GPG Docker
+    # ==========================================================
+    - name: "[3] Créer le répertoire keyrings"
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: "[3] Télécharger la clé GPG Docker (Ubuntu)"
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+        force: true
+
+    # ==========================================================
+    # ÉTAPE 4 : Dépôt Docker
+    # ==========================================================
+    - name: "[4] Supprimer tout ancien dépôt Docker résiduel"
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/apt/sources.list.d/docker.list
+        - /etc/apt/sources.list.d/docker.sources
+
+    - name: "[4] Déterminer le codename Ubuntu"
+      set_fact:
+        ubuntu_codename: "{{ ansible_distribution_release }}"
+
+    - name: "[4] Ajouter le dépôt Docker Ubuntu"
+      copy:
+        dest: /etc/apt/sources.list.d/docker.sources
+        content: |
+          Types: deb
+          URIs: https://download.docker.com/linux/ubuntu
+          Suites: {{ ubuntu_codename }}
+          Components: stable
+          Architectures: {{ ansible_architecture }}
+          Signed-By: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: "[4] Mettre à jour le cache apt après ajout du dépôt"
+      apt:
+        update_cache: true
+
+    # ==========================================================
+    # ÉTAPE 5 : Installation Docker Engine + Compose v2
+    # ==========================================================
+    - name: "[5] Installer Docker Engine et plugins"
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: "[5] Démarrer et activer Docker"
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    # ==========================================================
+    # ÉTAPE 6 : Ajout de kafka au groupe docker
+    # ==========================================================
+    - name: "[6] Vérifier que le groupe docker existe"
+      group:
+        name: docker
+        state: present
+
+    - name: "[6] Ajouter kafka au groupe docker"
+      user:
+        name: "{{ kafka_user }}"
+        groups: docker
+        append: true
+
+    # ==========================================================
+    # ÉTAPE 7 : Vérifications finales
+    # ==========================================================
+    - name: "[7] Vérifier Docker Compose v2"
+      command: docker compose version
+      register: compose_version
+      changed_when: false
+
+    - name: "[7] Afficher la version Docker Compose"
+      debug:
+        msg: "{{ compose_version.stdout }}"
+
+    - name: "[7] Tester Docker avec hello-world"
+      command: docker run --rm hello-world
+      register: hello_world
+      changed_when: false
+
+    - name: "[7] Afficher résultat hello-world"
+      debug:
+        msg: "{{ hello_world.stdout_lines }}"
+
+    # ==========================================================
+    # RÉSUMÉ
+    # ==========================================================
+    - name: "✅ RÉSUMÉ - Installation terminée"
+      debug:
+        msg:
+          - "plocate              : installé"
+          - "Docker Engine        : installé et démarré"
+          - "Docker Compose       : {{ compose_version.stdout }}"
+          - "Groupe docker        : kafka ajouté"
+          - "Ubuntu               : {{ ansible_distribution_version }} ({{ ansible_distribution_release }})"
+          - "⚠️  Reconnecte la session kafka pour activer le groupe docker"
