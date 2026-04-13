@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "User",
+  "namespace": "org.example",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "date", "type": ["null", "string"], "default": null},
+    {"name": "age", "type": "int"}
+  ]
+}
