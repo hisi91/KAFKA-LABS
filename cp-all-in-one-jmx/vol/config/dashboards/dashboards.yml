@@ -1,0 +1,13 @@
+apiVersion: 1
+
+# https://grafana.com/grafana/dashboards/24626
+providers:
+  - name: 'KAFKA'
+    type: file
+    orgId: 1
+    folder: ''
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

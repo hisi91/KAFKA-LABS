@@ -1,0 +1,365 @@
+---
+services:
+
+  # ─────────────────────────────────────────
+  # KAFKA BROKERS (KRaft - 3 brokers)
+  # ─────────────────────────────────────────
+  broker-1:
+    image: confluentinc/cp-server:8.2.0
+    hostname: broker-1
+    container_name: broker-1
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+      - "7071:7071"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker-1:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker-1:29092,CONTROLLER://broker-1:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker-1:29093,2@broker-2:29093,3@broker-3:29093'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: broker-1
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_ENABLE: 'false'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7071:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  broker-2:
+    image: confluentinc/cp-server:8.2.0
+    hostname: broker-2
+    container_name: broker-2
+    ports:
+      - "9093:9092"
+      - "9102:9101"
+      - "7072:7071"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker-2:29092,PLAINTEXT_HOST://localhost:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker-2:29092,CONTROLLER://broker-2:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker-1:29093,2@broker-2:29093,3@broker-3:29093'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: broker-2
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_ENABLE: 'false'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7071:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  broker-3:
+    image: confluentinc/cp-server:8.2.0
+    hostname: broker-3
+    container_name: broker-3
+    ports:
+      - "9094:9092"
+      - "9103:9101"
+      - "7073:7071"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker-3:29092,PLAINTEXT_HOST://localhost:9094'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker-3:29092,CONTROLLER://broker-3:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker-1:29093,2@broker-2:29093,3@broker-3:29093'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: broker-3
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_ENABLE: 'false'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7071:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  # ─────────────────────────────────────────
+  # SCHEMA REGISTRY
+  # ─────────────────────────────────────────
+  schema-registry:
+    image: confluentinc/cp-schema-registry:8.2.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+    ports:
+      - "8081:8081"
+      - "7074:7074"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker-1:29092,broker-2:29092,broker-3:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_JMX_PORT: 9102
+      SCHEMA_REGISTRY_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7074:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  # ─────────────────────────────────────────
+  # KAFKA CONNECT
+  # ─────────────────────────────────────────
+  connect:
+    image: confluentinc/cp-kafka-connect:8.2.0
+    hostname: connect
+    container_name: connect
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+      - schema-registry
+    ports:
+      - "8083:8083"
+      - "7075:7075"
+    environment:
+      CONNECT_REST_PORT: 8083
+      CONNECT_BOOTSTRAP_SERVERS: 'broker-1:29092,broker-2:29092,broker-3:29092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      KAFKA_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7075:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  # ─────────────────────────────────────────
+  # KSQLDB
+  # ─────────────────────────────────────────
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:8.2.0
+    hostname: ksqldb-server
+    container_name: ksqldb-server
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+      - connect
+    ports:
+      - "8088:8088"
+      - "7076:7076"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_BOOTSTRAP_SERVERS: "broker-1:29092,broker-2:29092,broker-3:29092"
+      KSQL_HOST_NAME: ksqldb-server
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_KSQL_CONNECT_URL: "http://connect:8083"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 3
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
+      KSQL_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7076:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  # ─────────────────────────────────────────
+  # REST PROXY
+  # ─────────────────────────────────────────
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:8.2.0
+    hostname: rest-proxy
+    container_name: rest-proxy
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+      - schema-registry
+    ports:
+      - "8082:8082"
+      - "7077:7077"
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'broker-1:29092,broker-2:29092,broker-3:29092'
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      KAFKAREST_OPTS: >
+        -javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7077:/opt/jmx-exporter/config.yml
+    volumes:
+      - ./jmx-exporter:/opt/jmx-exporter
+
+  # ─────────────────────────────────────────
+  # CONTROL CENTER
+  # ─────────────────────────────────────────
+  control-center:
+    image: confluentinc/cp-enterprise-control-center-next-gen:2.5.0
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+      - schema-registry
+      - connect
+      - ksqldb-server
+      - prometheus
+    ports:
+      - "9021:9021"
+    volumes:
+      - ./vol/config:/mnt/config
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker-1:29092,broker-2:29092,broker-3:29092'
+      CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: 'connect:8083'
+      CONTROL_CENTER_CONNECT_HEALTHCHECK_ENDPOINT: '/connectors'
+      CONTROL_CENTER_KSQL_KSQLDB1_URL: "http://ksqldb-server:8088"
+      CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL: "http://localhost:8088"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_REPLICATION_FACTOR: 3
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 3
+      CONTROL_CENTER_PROMETHEUS_ENABLE: "true"
+      CONTROL_CENTER_PROMETHEUS_URL: http://prometheus:9090
+      PORT: 9021
+
+  # ─────────────────────────────────────────
+  # PROMETHEUS (standard)
+  # ─────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    hostname: prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./vol/config:/mnt/config
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/mnt/config/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+  # prometheus:
+  #   image: confluentinc/cp-enterprise-prometheus:2.5.0
+  #   hostname: cp-enterprise-prometheus
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./vol/config:/mnt/config
+  #     - prometheus-data:/prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   environment:
+  #     CONFIG_PATH: "/mnt/config"
+  #     SHOULD_LOG_TO_FILE: "false"
+  # ─────────────────────────────────────────
+  # ALERTMANAGER (standard)
+  # ─────────────────────────────────────────
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    hostname: alertmanager
+    container_name: alertmanager
+    depends_on:
+      - prometheus
+    ports:
+      - "9095:9093"
+    volumes:
+      - ./vol/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+
+  # ─────────────────────────────────────────
+  # GRAFANA
+  # ─────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    hostname: grafana
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./vol/config/datasources/prometheus.yml:/etc/grafana/provisioning/datasources/prometheus.yml
+      - ./vol/config/dashboards:/etc/grafana/provisioning/dashboards
+
+  # ─────────────────────────────────────────
+  # POSTGRES
+  # ─────────────────────────────────────────
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lab
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # ─────────────────────────────────────────
+  # MONGODB
+  # ─────────────────────────────────────────
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  grafana-data:
+  prometheus-data:
+  postgres-data:
+  mongodb-data:

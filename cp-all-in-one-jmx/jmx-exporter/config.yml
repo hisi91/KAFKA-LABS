@@ -1,0 +1,37 @@
+startDelaySeconds: 0
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+
+  # Kafka Server
+  - pattern: kafka.server<type=(.+), name=(.+)><>(Count|Value)
+    name: kafka_server_$1_$2
+
+  - pattern: kafka.server<type=(.+), name=(.+)><>(OneMinuteRate)
+    name: kafka_server_$1_$2
+
+  # Controller (KRaft)
+  - pattern: kafka.controller<type=(.+), name=(.+)><>(Count|Value)
+    name: kafka_controller_$1_$2
+
+  # Network
+  - pattern: kafka.network<type=(.+), name=(.+)><>(Count|Value)
+    name: kafka_network_$1_$2
+
+  # Log
+  - pattern: kafka.log<type=(.+), name=(.+)><>Value
+    name: kafka_log_$1_$2
+
+  # JVM
+  - pattern: java.lang<type=Memory><HeapMemoryUsage>(used|max)
+    name: jvm_memory_bytes_$1
+
+  - pattern: 'io.confluent.kafka.schemaregistry<type=(.+), name=(.+)><>Value'
+    name: schemaregistry_$1_$2
+
+  - pattern: 'kafka.connect<type=(.+), name=(.+)><>Value'
+    name: kafka_connect_$1_$2
+
+  - pattern: 'io.confluent.ksql.metrics<type=(.+), name=(.+)><>Value'
+    name: ksqldb_$1_$2
