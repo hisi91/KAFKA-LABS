@@ -263,6 +263,9 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 3
       CONTROL_CENTER_PROMETHEUS_ENABLE: "true"
       CONTROL_CENTER_PROMETHEUS_URL: http://prometheus:9090
+      CONTROL_CENTER_PROMETHEUS_RULES_FILE: /mnt/config/trigger_rules-generated.yml
+      CONTROL_CENTER_ALERTMANAGER_URL: http://alertmanager:9093
+      CONTROL_CENTER_ALERTMANAGER_CONFIG_FILE: /mnt/config/alertmanager.yml
       PORT: 9021
 
   # ─────────────────────────────────────────
