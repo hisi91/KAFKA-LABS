@@ -6,10 +6,10 @@
 
 set -euo pipefail
 
-INVENTORY="formation/inventory_participants"
-SSH_KEY_PARAM="ansible_ssh_private_key_file=formation/.ssh/id_rsa"
+INVENTORY="/home/$USER/formation/inventory_participants"
+SSH_KEY_PARAM="ansible_ssh_private_key_file=/home/$USER/formation/.ssh/id_rsa"
 PLAYBOOKS=(
-    "01_setup_playbook.yml"
+    "02_playbook.yml"
     # Ajoute d'autres playbooks ici si besoin :
     # "02_deploy_playbook.yml"
 )
@@ -55,11 +55,11 @@ log_info "Sauvegarde créée : ${INVENTORY}.bak"
 
 # Pour chaque ligne contenant une IP (pattern: commence par un chiffre),
 # on vérifie si la clé SSH est déjà présente ; sinon on l'insère après l'IP.
-python3 - <<'PYEOF'
+python3 - <<PYEOF
 import re, sys
 
-inventory_path = "formation/inventory_participants"
-ssh_key_param  = "ansible_ssh_private_key_file=formation/.ssh/id_rsa"
+inventory_path = "/home/$USER/formation/inventory_participants"
+ssh_key_param  = "ansible_ssh_private_key_file=/home/$USER/formation/.ssh/id_rsa"
 
 with open(inventory_path, "r") as f:
     lines = f.readlines()
